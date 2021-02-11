@@ -4,7 +4,6 @@ export const api = axios.create({
     headers: {
         'Accept': 'application/json',
        "content-type": "application/json",
-       'method': "POST",
     }     
   });
 
