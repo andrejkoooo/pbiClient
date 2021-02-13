@@ -1,67 +1,94 @@
 <template>
   <div class="mt-5 pbi-card">
     <div>
-      <b-form @submit="onSubmit" @reset="onReset">
-        <b-card title="Validate PBI configuration" bg-variant="light">
+      <b-card
+        title="Validate PBI configuration"
+        bg-variant="light"
+        class="rounded-0"
+      >
+        <pbiInput
+          :label="'tenantId'"
+          :labelName="'Tenenat ID'"
+          :chBoxName="''"
+          :loading="spnApiState"
+          :inputdata="spnResponse"
+          @inputchange="onTenantChange($event)"
+        />
+        <pbiInput
+          :label="'spnId'"
+          @oncheck="onSpnCheck($event)"
+          :labelName="'Service Principal'"
+          :chBoxName="'Encrypted SPN'"
+          :loading="spnApiState"
+          :inputdata="spnResponse"
+          @inputchange="onSpnChange($event)"
+          :isSpn="true"
+        />
+        <div class="mt-3">
           <pbiInput
-            :label="'spnId'"
-            @oncheck="onSpnCheck($event)"
-            :labelName="'Service Principal'"
-            :chBoxName="'Encrypted SPN'"
-            :error="''"
-            :loading="spnApiState"
-            :inputdata="spnResponse"
-            @inputchange="onSpnChange($event)"
-            :isSpn="true"
+            :label="'WorkspaceId'"
+            @oncheck="onWorkspaceCheck($event)"
+            :labelName="'Workspace ID'"
+            :chBoxName="'Any'"
+            :loading="workspaceApiState"
+            :inputdata="workspaceResponse"
+            @inputchange="onWorkspaceChange($event)"
           />
-          <div class="mt-3">
-            <pbiInput
-              :label="'WorkspaceId'"
-              @oncheck="onWorkspaceCheck($event)"
-              :labelName="'Workspace ID'"
-              :chBoxName="'Any'"
-              :error="''"
-              :loading="workspaceApiState"
-              :inputdata="workspaceResponse"
-              @inputchange="onWorkspaceChange($event)"
-            />
-          </div>
-          <div class="mt-3">
-            <pbiInput
-              :label="'ReportId'"
-              @oncheck="onReportCheck($event)"
-              :labelName="'Report ID'"
-              :chBoxName="'Any'"
-              :error="''"
-              :loading="reportApiState"
-              :inputdata="reportResponse"
-              @inputchange="onReportChange($event)"
-            />
-          </div>
-          <div>
-            <b-button
-              type="submit"
-              variant="outline-primary"
-              class="mr-2"
-              :disabled="isLoading"
-              >{{ buttonText }}
-              <b-icon
+        </div>
+        <div class="mt-3">
+          <pbiInput
+            :label="'ReportId'"
+            @oncheck="onReportCheck($event)"
+            :labelName="'Report ID'"
+            :chBoxName="'Any'"
+            :loading="reportApiState"
+            :inputdata="reportResponse"
+            @inputchange="onReportChange($event)"
+          />
+        </div>
+        <div class="mt-3">
+          <pbiInput
+            :label="'DatasetId'"
+            @oncheck="onDatasetCheck($event)"
+            :labelName="'Dataset ID'"
+            :chBoxName="'Any'"
+            :loading="datasetApiState"
+            :inputdata="datasetResponse"
+            @inputchange="onDatasetChange($event)"
+          />
+        </div>
+        <div>
+          <b-button
+            @click="onSubmit"
+            squared
+            variant="outline-primary"
+            class="mr-2"
+            :disabled="isLoading"
+            >{{ buttonText }}
+            <!-- <b-icon
                 v-if="isLoading"
                 icon="gear-wide-connected"
                 animation="spin"
                 font-scale="1"
-              ></b-icon>
-            </b-button>
-            <b-button
-              type="reset"
-              :disabled="isLoading"
-              variant="outline-danger"
-              >Reset</b-button
-            >
-          </div>
-        </b-card>
-      </b-form>
-      {{ spnResponse }}
+              ></b-icon> -->
+          </b-button>
+          <b-button @click="onReset" squared variant="outline-danger"
+            >Reset</b-button
+          >
+        </div>
+      </b-card>
+      <div>
+        <p v-if="spnResponse.isOk != null && spnResponse.data != null">{{ spnResponse }}</p>
+        <p v-if="workspaceResponse.isOk != null && workspaceResponse.data != null">
+          {{ workspaceResponse }}
+        </p>
+        <p v-if="reportResponse.isOk != null&& reportResponse.data != null">
+          {{ reportResponse }}
+        </p>
+        <p v-if="datasetResponse.isOk != null && datasetResponse.data != null">
+          {{ datasetResponse }}
+        </p>
+      </div>
     </div>
   </div>
 </template>
@@ -76,7 +103,6 @@ export default {
   },
   data() {
     return {
-      isSubmitted: false,
       loading: false,
       workspaceId: "",
       reportId: "",
@@ -84,6 +110,9 @@ export default {
       anyReport: false,
       spn: "",
       isSpnEncrypted: false,
+      tenantId: "",
+      datasetId: "",
+      anyDataset: false,
     };
   },
   computed: {
@@ -93,13 +122,15 @@ export default {
       "workspaceApiState",
       "workspaceResponse",
       "reportResponse",
-      "reportApiState"
+      "reportApiState",
+      "datasetApiState",
+      "datasetResponse",
     ]),
     buttonText() {
       return this.spnApiState.isLoading ? "Validating..." : "Validate";
     },
     isLoading() {
-      return this.spnApiState.isLoading;
+      return this.spnApiState.isLoading || this.tenantId.length === 0;
     },
     spnValidation() {
       if (this.spnResponse.isOk != null) {
@@ -109,14 +140,12 @@ export default {
     },
   },
   methods: {
-    async onSubmit(event) {
-      this.isSubmitted = true;
-      event.preventDefault();
-      this.ResetErrors();
-
+    async onSubmit() {
+      this.loading = true;
       await this.$store.dispatch("validateSPN", {
         spn: this.spn,
         isSpnEncrypted: this.isSpnEncrypted,
+        tenantId: this.tenantId,
       });
       if (!this.spnValidation) {
         //stop if error
@@ -127,15 +156,58 @@ export default {
         const workspace = this.anyWorkspace ? "" : this.workspaceId;
         await this.$store.dispatch("validateWorkspace", {
           spn: this.spn,
+          tenantId: this.tenantId,
           id: workspace,
         });
       }
+      if (!this.workspaceResponse.isOk) {
+        //stop if error
+        return;
+      }
+
+      if (
+        this.isWorkspaceOk() &&
+        (this.reportId.length > 0 || this.anyReport)
+      ) {
+        const report = this.anyReport ? "" : this.reportId;
+        await this.$store.dispatch("validateReport", {
+          spn: this.spn,
+          tenantId: this.tenantId,
+          wid: this.workspaceId,
+          rId: report,
+        });
+      }
+      if (
+        this.isWorkspaceOk() &&
+        (this.datasetId.length > 0 || this.anyDataset)
+      ) {
+        const dataset = this.anyDataset ? "" : this.datasetId;
+        await this.$store.dispatch("validateDataset", {
+          spn: this.spn,
+          tenantId: this.tenantId,
+          wid: this.workspaceId,
+          dId: dataset,
+        });
+      }
+      this.loading = false;
     },
-    onReportChange(val){
-this.reportId = val;
+    isWorkspaceOk() {
+      return this.workspaceId != "" && this.workspaceResponse.isOk;
     },
-    onReportCheck(val){
-this.anyReport = val;
+    onDatasetChange(val) {
+      this.datasetId = val;
+    },
+    onDatasetCheck(val) {
+      this.anyDataset = val;
+    },
+    onTenantChange(val) {
+      this.tenantId = val;
+    },
+    onReportChange(val) {
+      this.reportId = val;
+    },
+    onReportCheck(val) {
+      this.anyReport = val;
     },
     onWorkspaceChange(val) {
       this.workspaceId = val;
@@ -143,20 +215,20 @@ this.anyReport = val;
     onSpnChange(val) {
       this.spn = val;
     },
-    ResetErrors() {
+    onReset() {
       this.spnError = "";
+      this.tenantId = "";
+      this.workspaceId = "";
+      this.reportId = "";
+      this.datasetId = "";
       this.$store.commit("resetSPN");
     },
+
     onWorkspaceCheck(data) {
       this.anyWorkspace = data;
     },
     onSpnCheck(val) {
       this.isSpnEncrypted = val;
-    },
-    onReset(event) {
-      event.preventDefault();
-      this.ResetErrors();
-      this.isSubmitted = false;
     },
     onSpnError(details) {
       if (details != null) this.spnError = JSON.parse(JSON.stringify(details));
@@ -172,5 +244,8 @@ this.anyReport = val;
 }
 .btn:disabled {
   cursor: not-allowed;
+}
+.btn {
+  width: 120px;
 }
 </style>

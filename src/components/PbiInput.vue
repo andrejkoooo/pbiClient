@@ -14,7 +14,7 @@
           :state="validation"
           :disabled="isChecked && !isSpn"
           v-model="value"
-          @change="onInputChange"
+          @keyup="onInputChange"
         ></b-form-input>
         <div v-if="loadingData" class="input-group-append">
           <span class="input-group-text" id="basic-addon2"
@@ -27,20 +27,29 @@
         </div>
       </b-input-group>
 
-      <b-form-checkbox v-model="isChecked" @change="onCheck()">
+      <b-form-checkbox
+        v-if="chBoxName.length > 0"
+        v-model="isChecked"
+        @change="onCheck()"
+      >
         <b-card-text class="small text-muted mt-1">{{
           chBoxName
         }}</b-card-text></b-form-checkbox
       >
-      <b-form-invalid-feedback :state="validation">
-        {{ inputdata.message }}
-      </b-form-invalid-feedback>
+      <div v-if="chBoxName.length > 0">
+        <b-form-invalid-feedback :state="validation">
+          {{ getMessage }}
+        </b-form-invalid-feedback>
+        <b-form-valid-feedback :state="validation">
+          {{ getMessage }}
+        </b-form-valid-feedback>
+      </div>
     </b-form-group>
   </div>
 </template>
 
 <script>
-import { ILoading, Spn } from "../Models/models";
+import { ILoading, ApiResult } from "../Models/models";
 export default {
   name: "PbiInput",
   data() {
@@ -52,10 +61,9 @@ export default {
   props: {
     labelName: String,
     chBoxName: String,
-    error: String,
     label: String,
     loading: ILoading,
-    inputdata: Spn,
+    inputdata: ApiResult,
     isSpn: {
       type: Boolean,
       default: false,
@@ -66,7 +74,13 @@ export default {
       if (this.inputdata.isOk != null && this.loadingData == false) {
         return this.inputdata.isOk ? true : false;
       }
+      if (this.inputdata.isOk === undefined) {
+        this.clear();
+      }
       return null;
+    },
+    getMessage() {
+      return this.inputdata.message;
     },
     placeholder() {
       return `Enter ${this.labelName}...`;
@@ -79,6 +93,9 @@ export default {
     },
   },
   methods: {
+    clear() {
+      this.value = "";
+    },
     onInputChange() {
       this.resetError();
       this.$emit("inputchange", this.value);

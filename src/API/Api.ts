@@ -8,5 +8,11 @@ export default {
   },
   validateWorkspace(data: any){
     return api.post<ApiResult>(GetRootUrl() + `api/servicePrincipal/validateWorkspace`, data);
+  },
+  validateReport(data: any){
+    return api.post<ApiResult>(GetRootUrl() + `api/servicePrincipal/validateReport`, data);
+  },
+  validateDataset(data: any){
+    return api.post<ApiResult>(GetRootUrl() + `api/servicePrincipal/validateDataset`, data);
   }
 };
