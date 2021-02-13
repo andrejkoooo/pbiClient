@@ -9,6 +9,11 @@ import NavBar from './components/NavBar';
 export default {
   components:{
     NavBar
+  },
+  mounted(){
+    const element = document.getElementById("core-data");
+   const apiUrl = element.dataset.apiUrl;
+    this.$store.commit("setApiRoot", apiUrl);
   }
 }
 </script>

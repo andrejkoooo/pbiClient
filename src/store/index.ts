@@ -9,7 +9,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    apiRoot: "http://localhost:56417/",
+    apiRoot: "http://localhost/",
     spnValidating: { isLoading: false, finished: false },
     workspaceApiState: { isLoading: false, finished: false },
     spnApiState: { isLoading: false, finished: false },
