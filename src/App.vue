@@ -5,17 +5,17 @@
   </div>
 </template>
 <script>
-import NavBar from './components/NavBar';
+import NavBar from "./components/NavBar";
 export default {
-  components:{
+  components: {
     NavBar
   },
-  mounted(){
+  mounted() {
     const element = document.getElementById("core-data");
-   const apiUrl = element.dataset.apiUrl;
+    const apiUrl = element.dataset.apiUrl;
     this.$store.commit("setApiRoot", apiUrl);
   }
-}
+};
 </script>
 <style>
 #app {

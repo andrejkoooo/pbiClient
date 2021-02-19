@@ -18,7 +18,7 @@ export default new Vuex.Store({
     reportResponse: new ApiResult(undefined, undefined, undefined),
     datasetResponse: new ApiResult(undefined, undefined, undefined),
     reportApiState: { isLoading: false, finished: false },
-    datasetApiState: { isLoading: false, finished: false },
+    datasetApiState: { isLoading: false, finished: false }
   },
   getters: {
     apiRoot(state) {
@@ -47,7 +47,7 @@ export default new Vuex.Store({
     },
     datasetResponse(state) {
       return state.datasetResponse;
-    },
+    }
   },
   mutations: {
     setApiRoot(state, payload) {
@@ -82,7 +82,7 @@ export default new Vuex.Store({
     },
     setDatasetResponse(state, payload) {
       state.datasetResponse = payload;
-    },
+    }
   },
   actions: {
     async validateSPN({ commit }, obj) {
@@ -90,8 +90,8 @@ export default new Vuex.Store({
       const response: AxiosResponse = await API.validateSpn({
         spn: obj.spn,
         isSpnEncrypted: obj.isSpnEncrypted,
-        tenantId: obj.tenantId,
-      }).catch((err) => {
+        tenantId: obj.tenantId
+      }).catch(err => {
         commit("setSpnApiState", { isLoading: false, finished: true });
         console.log(err);
         return err;
@@ -108,7 +108,8 @@ export default new Vuex.Store({
         spn: obj.spn,
         workspaceId: obj.id,
         tenantId: obj.tenantId,
-      }).catch((err) => {
+        isSpnEncrypted: obj.isSpnEncrypted
+      }).catch(err => {
         commit("setWorkspaceApiState", { isLoading: false, finished: true });
         console.log(err);
         return err;
@@ -125,7 +126,8 @@ export default new Vuex.Store({
         tenantId: obj.tenantId,
         workspaceId: obj.wid,
         reportId: obj.rId,
-      }).catch((err) => {
+        isSpnEncrypted: obj.isSpnEncrypted
+      }).catch(err => {
         commit("setReportApiState", { isLoading: false, finished: true });
         console.log(err);
         return err;
@@ -142,7 +144,8 @@ export default new Vuex.Store({
         tenantId: obj.tenantId,
         workspaceId: obj.wid,
         datasetId: obj.dId,
-      }).catch((err) => {
+        isSpnEncrypted: obj.isSpnEncrypted
+      }).catch(err => {
         commit("setDatasetApiState", { isLoading: false, finished: true });
         console.log(err);
         return err;
@@ -151,8 +154,8 @@ export default new Vuex.Store({
       const { data } = response;
       const result = new ApiResult(data.Status, data.Data, data.Message);
       commit("setDatasetResponse", result);
-    },
+    }
   },
 
-  modules: {},
+  modules: {}
 });

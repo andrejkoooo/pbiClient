@@ -78,11 +78,17 @@
         </div>
       </b-card>
       <div>
-        <p v-if="spnResponse.isOk != null && spnResponse.data != null">{{ spnResponse }}</p>
-        <p v-if="workspaceResponse.isOk != null && workspaceResponse.data != null">
+        <p v-if="spnResponse.isOk != null && spnResponse.data != null">
+          {{ spnResponse }}
+        </p>
+        <p
+          v-if="
+            workspaceResponse.isOk != null && workspaceResponse.data != null
+          "
+        >
           {{ workspaceResponse }}
         </p>
-        <p v-if="reportResponse.isOk != null&& reportResponse.data != null">
+        <p v-if="reportResponse.isOk != null && reportResponse.data != null">
           {{ reportResponse }}
         </p>
         <p v-if="datasetResponse.isOk != null && datasetResponse.data != null">
@@ -99,7 +105,7 @@ import pbiInput from "../components/PbiInput";
 // @ is an alias to /src    gear-wide-connected
 export default {
   components: {
-    pbiInput,
+    pbiInput
   },
   data() {
     return {
@@ -112,7 +118,7 @@ export default {
       isSpnEncrypted: false,
       tenantId: "",
       datasetId: "",
-      anyDataset: false,
+      anyDataset: false
     };
   },
   computed: {
@@ -124,7 +130,7 @@ export default {
       "reportResponse",
       "reportApiState",
       "datasetApiState",
-      "datasetResponse",
+      "datasetResponse"
     ]),
     buttonText() {
       return this.spnApiState.isLoading ? "Validating..." : "Validate";
@@ -137,7 +143,7 @@ export default {
         return this.spnResponse.isOk;
       }
       return null;
-    },
+    }
   },
   methods: {
     async onSubmit() {
@@ -145,7 +151,7 @@ export default {
       await this.$store.dispatch("validateSPN", {
         spn: this.spn,
         isSpnEncrypted: this.isSpnEncrypted,
-        tenantId: this.tenantId,
+        tenantId: this.tenantId
       });
       if (!this.spnValidation) {
         //stop if error
@@ -158,6 +164,7 @@ export default {
           spn: this.spn,
           tenantId: this.tenantId,
           id: workspace,
+          isSpnEncrypted: this.isSpnEncrypted
         });
       }
       if (!this.workspaceResponse.isOk) {
@@ -175,6 +182,7 @@ export default {
           tenantId: this.tenantId,
           wid: this.workspaceId,
           rId: report,
+          isSpnEncrypted: this.isSpnEncrypted
         });
       }
       if (
@@ -187,6 +195,7 @@ export default {
           tenantId: this.tenantId,
           wid: this.workspaceId,
           dId: dataset,
+          isSpnEncrypted: this.isSpnEncrypted
         });
       }
       this.loading = false;
@@ -232,8 +241,8 @@ export default {
     },
     onSpnError(details) {
       if (details != null) this.spnError = JSON.parse(JSON.stringify(details));
-    },
-  },
+    }
+  }
 };
 </script>
 

@@ -5,6 +5,6 @@ module.exports = {
   css: { extract: false },
   outputDir: path.resolve(
     __dirname,
-    "C:/Users/21322839/source/repos/WebApplication1/WebApplication1/Scripts/vue"
+    "C:/Users/andrej.hvorecky/source/myRepos/PbiAPI/WebApplication1/Scripts/vue"
   )
 };

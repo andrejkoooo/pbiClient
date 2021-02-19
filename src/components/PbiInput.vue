@@ -55,7 +55,7 @@ export default {
   data() {
     return {
       isChecked: false,
-      value: "",
+      value: ""
     };
   },
   props: {
@@ -66,8 +66,8 @@ export default {
     inputdata: ApiResult,
     isSpn: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   computed: {
     validation() {
@@ -90,7 +90,7 @@ export default {
         return this.loading.isLoading;
       }
       return false;
-    },
+    }
   },
   methods: {
     clear() {
@@ -111,10 +111,9 @@ export default {
       this.inputdata.isOk = null;
       this.inputdata.data = "";
       this.inputdata.message = "";
-    },
-  },
+    }
+  }
 };
 </script>
 
-<style>
-</style>
+<style></style>
