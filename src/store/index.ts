@@ -90,7 +90,8 @@ export default new Vuex.Store({
       const response: AxiosResponse = await API.validateSpn({
         spn: obj.spn,
         isSpnEncrypted: obj.isSpnEncrypted,
-        tenantId: obj.tenantId
+        tenantId: obj.tenantId,
+        clientId: obj.clientId
       }).catch(err => {
         commit("setSpnApiState", { isLoading: false, finished: true });
         console.log(err);
@@ -108,7 +109,8 @@ export default new Vuex.Store({
         spn: obj.spn,
         workspaceId: obj.id,
         tenantId: obj.tenantId,
-        isSpnEncrypted: obj.isSpnEncrypted
+        isSpnEncrypted: obj.isSpnEncrypted,
+        clientId: obj.clientId
       }).catch(err => {
         commit("setWorkspaceApiState", { isLoading: false, finished: true });
         console.log(err);
@@ -126,7 +128,8 @@ export default new Vuex.Store({
         tenantId: obj.tenantId,
         workspaceId: obj.wid,
         reportId: obj.rId,
-        isSpnEncrypted: obj.isSpnEncrypted
+        isSpnEncrypted: obj.isSpnEncrypted,
+        clientId: obj.clientId
       }).catch(err => {
         commit("setReportApiState", { isLoading: false, finished: true });
         console.log(err);
@@ -144,7 +147,8 @@ export default new Vuex.Store({
         tenantId: obj.tenantId,
         workspaceId: obj.wid,
         datasetId: obj.dId,
-        isSpnEncrypted: obj.isSpnEncrypted
+        isSpnEncrypted: obj.isSpnEncrypted,
+        clientId: obj.clientId
       }).catch(err => {
         commit("setDatasetApiState", { isLoading: false, finished: true });
         console.log(err);

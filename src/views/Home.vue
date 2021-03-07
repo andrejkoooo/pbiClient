@@ -7,6 +7,14 @@
         class="rounded-0"
       >
         <pbiInput
+          :label="'tenantName'"
+          :labelName="'Tenenat Name'"
+          :chBoxName="''"
+          :loading="spnApiState"
+          :inputdata="spnResponse"
+          @inputchange="onTenantNameChange($event)"
+        />
+        <pbiInput
           :label="'tenantId'"
           :labelName="'Tenenat ID'"
           :chBoxName="''"
@@ -118,7 +126,8 @@ export default {
       isSpnEncrypted: false,
       tenantId: "",
       datasetId: "",
-      anyDataset: false
+      anyDataset: false,
+      clientId: ""
     };
   },
   computed: {
@@ -151,7 +160,8 @@ export default {
       await this.$store.dispatch("validateSPN", {
         spn: this.spn,
         isSpnEncrypted: this.isSpnEncrypted,
-        tenantId: this.tenantId
+        tenantId: this.tenantId,
+        clientId: this.clientId
       });
       if (!this.spnValidation) {
         //stop if error
@@ -164,7 +174,8 @@ export default {
           spn: this.spn,
           tenantId: this.tenantId,
           id: workspace,
-          isSpnEncrypted: this.isSpnEncrypted
+          isSpnEncrypted: this.isSpnEncrypted,
+          clientId: this.clientId
         });
       }
       if (!this.workspaceResponse.isOk) {
@@ -182,7 +193,8 @@ export default {
           tenantId: this.tenantId,
           wid: this.workspaceId,
           rId: report,
-          isSpnEncrypted: this.isSpnEncrypted
+          isSpnEncrypted: this.isSpnEncrypted,
+          clientId: this.clientId
         });
       }
       if (
@@ -195,7 +207,8 @@ export default {
           tenantId: this.tenantId,
           wid: this.workspaceId,
           dId: dataset,
-          isSpnEncrypted: this.isSpnEncrypted
+          isSpnEncrypted: this.isSpnEncrypted,
+          clientId: this.clientId
         });
       }
       this.loading = false;
@@ -232,7 +245,9 @@ export default {
       this.datasetId = "";
       this.$store.commit("resetSPN");
     },
-
+    onTenantNameChange(val) {
+      this.clientId = val;
+    },
     onWorkspaceCheck(data) {
       this.anyWorkspace = data;
     },
